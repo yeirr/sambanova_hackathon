@@ -1,0 +1,26 @@
+dspy-ai==2.5.27
+duckduckgo_search==6.3.3
+hf_transfer==0.1.8
+ipykernel==6.29.5
+ipython==8.27.0
+isort==5.13.2
+jinja2==3.1.4
+jupyter-console==6.6.3
+langchain_community==0.3.4
+llama-index-embeddings-nvidia==0.2.3
+llama-index-embeddings-openai==0.2.4
+llama-index-llms-nvidia==0.2.6
+llama-index==0.11.22
+mypy==1.13.0
+nest-asyncio==1.6.0
+psycopg2-binary==2.9.10
+psycopg==3.2.3
+redisvl==0.3.5
+ruff==0.7.2
+sentence-transformers==3.2.1
+streamlit==1.40.0
+streamlit_extras==0.5.0
+uvloop==0.21.0
+vllm==0.6.3.post1
+--index-url https://flashinfer.ai/whl/cu124/torch2.4
+flashinfer==0.1.6
