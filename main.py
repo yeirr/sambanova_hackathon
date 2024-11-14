@@ -374,6 +374,40 @@ async def init_ma_reasoning(
     return str(ma_reasoning)
 
 
+def init_vlm():
+    from vllm import LLM, SamplingParams
+    from vllm.assets.image import ImageAsset
+
+    # Candidates
+    # * "mistral-community/pixtral-12b"
+    # * "nm-testing/pixtral-12b-FP8-dynamic"
+    model_id = "nm-testing/pixtral-12b-FP8-dynamic"
+    max_img_per_msg = 2
+    max_tokens_per_img = 4096
+    llm = LLM(
+        seed=1234,
+        model=model_id,
+        max_num_seqs=1,
+        enforce_eager=True,
+        gpu_memory_utilization=0.95,
+        max_num_batched_tokens=max_img_per_msg * max_tokens_per_img,
+        max_model_len=8192,
+        limit_mm_per_prompt={"image": max_img_per_msg},
+    )
+
+    image1 = ImageAsset("cherry_blossom").pil_image.convert("RGB")
+    image2 = ImageAsset("stop_sign").pil_image.convert("RGB")
+    inputs = {
+        "prompt": "<s>[INST]Briefly describe the images.\n[IMG][IMG][/INST]",
+        "multi_modal_data": {"image": [image1, image2]},
+    }
+    outputs = llm.generate(
+        inputs, sampling_params=SamplingParams(temperature=0.1, max_tokens=256)
+    )
+
+    print(outputs[0].outputs[0].text)
+
+
 # Custom events.
 class SetUpEvent(Event):
     message: str = Field(description="End user query in natural language.")

@@ -1,3 +1,4 @@
+https://vllm-wheels.s3.us-west-2.amazonaws.com/nightly/vllm-1.0.0.dev-cp38-abi3-manylinux1_x86_64.whl
 --index-url https://flashinfer.ai/whl/cu124/torch2.4
 flashinfer==0.1.6
 dspy-ai==2.5.29
@@ -23,4 +24,3 @@ sentence-transformers==3.2.1
 streamlit==1.40.1
 streamlit_extras==0.5.0
 uvloop==0.21.0
-vllm==0.6.3.post1
