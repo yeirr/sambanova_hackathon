@@ -43,6 +43,7 @@ from openai.types.chat.chat_completion import (
     Choice,
 )
 from openai.types.completion import CompletionUsage
+from PIL import Image
 from redisvl.extensions.llmcache import SemanticCache
 from redisvl.utils.vectorize import HFTextVectorizer
 from streamlit_extras.bottom_container import bottom
@@ -223,6 +224,26 @@ async def run_cypher_query(cypher_query: str) -> str:
     return kg_response_parsed
 
 
+def create_image_input(filename: str) -> str:
+    """
+    Supports binary, local and remote filepaths.
+
+    Retain native resolution for detailed accuracy.
+
+    Example
+    =======
+        pil_image = create_image_input('./data/4k_image.jpg')
+
+    Returns
+    =======
+        <PIL.Image.Image image mode=RGB size=5229x3486>
+    """
+    # Read and convert a single file to RGB format.
+    pil_image = Image.open(filename).convert("RGB")
+
+    return pil_image
+
+
 # Initialization of services.
 @st.cache_resource
 def init_semantic_cache() -> SemanticCache:
@@ -391,18 +412,20 @@ def init_vlm():
         enforce_eager=True,
         gpu_memory_utilization=0.95,
         max_num_batched_tokens=max_img_per_msg * max_tokens_per_img,
-        max_model_len=8192,
+        max_model_len=max_img_per_msg * max_tokens_per_img,
         limit_mm_per_prompt={"image": max_img_per_msg},
     )
 
-    image1 = ImageAsset("cherry_blossom").pil_image.convert("RGB")
-    image2 = ImageAsset("stop_sign").pil_image.convert("RGB")
-    inputs = {
-        "prompt": "<s>[INST]Briefly describe the images.\n[IMG][IMG][/INST]",
-        "multi_modal_data": {"image": [image1, image2]},
-    }
+    # Sanity checks.
+    local_image_4k = create_image_input(filename="./data/4k_image.jpg")
+    local_image_8k = create_image_input(filename="./data/8k_image.jpg")
+
     outputs = llm.generate(
-        inputs, sampling_params=SamplingParams(temperature=0.1, max_tokens=256)
+        {
+            "prompt": "<s>[INST]Briefly describe the images.\n[IMG][IMG][/INST]",
+            "multi_modal_data": {"image": [local_image_4k, local_image_8k]},
+        },
+        sampling_params=SamplingParams(temperature=0.1, max_tokens=256),
     )
 
     print(outputs[0].outputs[0].text)

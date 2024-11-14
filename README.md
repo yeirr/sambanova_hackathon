@@ -11,7 +11,31 @@ A SambaNova project on human nutrition.
 * Prebuilt Cypher statements in vectorstore
 * Conditional branching in LlamaIndex workflow
 * Multi-agent reasoning with majority vote
-* Focus on human nutrition topics(general info, food safety, healthy diet, WHO factsheets)
+* Human nutrition topics(general info, food safety, healthy diet, WHO factsheets)
+* Multi-modality(Vision-Language)
+  * support:
+    + 128K context length
+    + natural resolution and various aspect ratios
+    + single and multi-image inputs
+    + natural images(tested up to 8k)
+    + documents(figures: graph, diagram, charts, tables etc)
+  * use cases:
+    + reasoning over complex figures
+    + chart understanding, analysis and actionable plan to drive desirable outcomes
+    + multi-image instruction following
+    + image-to-code
+    + natural scene understanding
+    + image-text retrieval
+    + image captioning
+    + mm machine translation
+    + image generation
+    + visual qa
+    + visual commonsense reasoning
+    + visual storytelling
+    + accessibility
+    + content moderation
+    + medical imaging analysis
+    + robotics and autonomous systems
 
 ## Instructions
 
