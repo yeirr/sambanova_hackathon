@@ -71,11 +71,9 @@ Initialize local instances.
 docker compose \
   --env-file=.env \
   --profile redis-stack \
-  --profile pg16age \
-  --profile nim up -d
+  --profile pg16age up -d
 ```
-> Takes around >5mins to build model workspace in nim container.
-
+> Meanwhile wait for 'contest-pg16age' to initialize before importing graph data from CSV files by running mounted SQL script.
 
 ```bash
 docker exec -it contest-pg16age \
@@ -91,12 +89,11 @@ docker exec -it contest-pg16age \
   -f /tmp/who_factsheets_part4of4.sql \
   -f /tmp/postprocess_kg.sql
 ```
-> Meanwhile wait for 'contest-pg16age' to initialize before importing graph data from CSV files by running mounted SQL script.
 
 ```bash
 bash scripts/run_vllm
 ```
-> Wait for backend instances to be initialized before running next command.
+> Wait for backend instances to be initialized before running frontend.
 
 ### Frontend
 

@@ -35,7 +35,6 @@ from llama_index.core.workflow import (
     Workflow,
     step,
 )
-from llama_index.llms.nvidia import NVIDIA
 from openai import AsyncOpenAI
 from openai.types.chat.chat_completion import (
     ChatCompletion,
@@ -322,7 +321,7 @@ async def init_openai_client() -> AsyncOpenAI:
 
 
 async def init_workflow() -> typing.Any:
-    # Initialize Nvidia NIM with workflow.
+    # Initialize workflow.
     workflow = StatefulWorkflow(timeout=30, verbose=False)
 
     # Sanity check.
@@ -444,11 +443,9 @@ class LLMEvent(Event):
 
 
 class StatefulWorkflow(Workflow):
-    llm = NVIDIA(
-        api_key=config["NGC_API_KEY"],
-        model=config["MODEL_ID"],
-        base_url=f"http://localhost:{config['PORT']}/v1",
-        max_tokens=config["MAX_TOKENS"],
+    async_remote_openai_client = AsyncOpenAI(
+        base_url=config["BASE_URL"],
+        api_key=config["API_KEY"],
     )
 
     @step
@@ -538,9 +535,13 @@ class StatefulWorkflow(Workflow):
         )
 
         # Run inference here.
-        chat_response = await self.llm.astream_chat(
-            messages,
-            timeout=30,
+        chat_response = await self.async_remote_openai_client.chat.completions.create(
+            messages=messages,
+            timeout=60,
+            temperature=0.1,
+            model=config["MODEL_ID"],
+            max_tokens=int(config["MAX_TOKENS"]),
+            stream=True,
         )
 
         # Return an async generator.
@@ -674,8 +675,9 @@ async def main(timeout: int = 30) -> None:
                 async for ev in handler.stream_events():
                     if isinstance(ev, StopEvent):
                         async for chunk in ev.result:
-                            if chunk.raw.choices[0].finish_reason != "stop":
-                                text_buffer.append(chunk.delta)
+                            if chunk.choices[0].finish_reason != "stop":
+                                if chunk.choices[0].delta.role == "assistant":
+                                    text_buffer.append(chunk.choices[0].delta.content)
                                 st.write("".join(text_buffer))
 
             # Write unique responses to semantic cache.
