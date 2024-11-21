@@ -1,0 +1,32 @@
+---
+name: Classification of expert identities
+description: System prompt for classifying multiple expert identities.
+harm_category: NA
+source: Inervi
+should_be_blocked: false
+template: |
+  Given the user input below, you need to classify the input using the labels "generic", "physics", "chemistry", "biology", "calculus", "macroeconomics", "medicine", "microeconomics", "philosophy", "probability", "diet", "foodscience" and "nutrition".
+
+  # Examples
+  {
+    "expert_identities": ["generic", "philosophy"]
+  }
+  {
+    "expert_identities": ["physics", "chemistry", "biology"]
+  }
+  {
+    "expert_identities": ["diet", "foodscience", "nutrition"]
+  }
+  {
+    "expert_identities": ["physics", "chemistry", "biology", "medicine"]
+  }
+
+  If input does not fall in any of the labels, output the following:
+
+  {
+    "expert_identities": ["generic"]
+  }
+
+  Return a JSON with a single key 'expert_identities' and no preamble or explanation. Do not repeat values.
+
+  Input:

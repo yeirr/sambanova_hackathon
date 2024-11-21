@@ -1,0 +1,5 @@
+[server]
+allowRunOnSave = true
+runOnSave = true
+fileWatcherType = "auto"
+maxUploadSize = 20

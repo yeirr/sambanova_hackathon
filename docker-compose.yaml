@@ -1,0 +1,64 @@
+name: sambanova-hackathon
+
+networks:
+  backend:
+    name: backend
+    driver: bridge
+
+services:
+  redis-stack:
+    privileged: false
+    container_name: contest-redis-stack
+    image: redis/redis-stack:7.4.0-v1
+    profiles: ["redis-stack"]
+    pull_policy: missing
+    environment:
+      REDIS_ARGS: --maxmemory 100mb
+      REDISEARCH_ARGS: MAXSEARCHRESULTS 100 MAXAGGREGATERESULTS 100 TIMEOUT 100 MINPREFIX 3 DEFAULT_DIALECT 2
+      REDISJSON_ARGS:
+      REDISTIMESERIES_ARGS:
+      REDISBLOOM_ARGS:
+      RILOGLEVEL: ERROR # DEBUG,INFO,WARNING,ERROR,CRITICAL
+    ports:
+      - 6379:6379
+    networks:
+      - backend
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "2"
+          memory: 4G
+    restart: "no"
+    stop_grace_period: 1s
+  contest-pg16age:
+    container_name: contest-pg16age
+    image: apache/age:release_PG16_1.5.0
+    profiles: ["pg16age"]
+    environment:
+      PGTZ: "Asia/Singapore"
+      POSTGRES_HOST_AUTH_METHOD: trust # ideal for single-user workstation with local connections
+    ports:
+      - 5432:5432
+    networks:
+      - backend
+    volumes:
+      - ./scripts/load_kg.sql:/tmp/load_kg.sql
+      - ./scripts/who_healthy_diet.sql:/tmp/who_healthy_diet.sql
+      - ./scripts/un_who_healthy_diets.sql:/tmp/un_who_healthy_diets.sql
+      - ./scripts/who_food_safety.sql:/tmp/who_food_safety.sql
+      - ./scripts/who_factsheets_part1of4.sql:/tmp/who_factsheets_part1of4.sql
+      - ./scripts/who_factsheets_part2of4.sql:/tmp/who_factsheets_part2of4.sql
+      - ./scripts/who_factsheets_part3of4.sql:/tmp/who_factsheets_part3of4.sql
+      - ./scripts/who_factsheets_part4of4.sql:/tmp/who_factsheets_part4of4.sql
+      - ./scripts/postprocess_kg.sql:/tmp/postprocess_kg.sql
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "8"
+          memory: 8G
+    restart: "no"
+    stop_grace_period: 1s
+    runtime: runc
+    user: "postgres:postgres"
