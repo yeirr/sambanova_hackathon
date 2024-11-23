@@ -286,7 +286,7 @@ async def init_openai_client() -> AsyncOpenAI:
 
     # Warm up local vllm engine.
     await client.chat.completions.create(
-        model="yeirr/llama3_2-1B-instruct-awq-g128-4bit",
+        model="neuralmagic/Llama-3.2-1B-Instruct-quantized.w8a8",
         messages=[{"role": "user", "content": "Hello!"}],
         stream=False,
         temperature=0.1,
@@ -321,7 +321,7 @@ async def init_ma_reasoning(
 
     # Identity expert identities.
     classify_expert_identities = await openai_client.chat.completions.create(
-        model="yeirr/llama3_2-1B-instruct-awq-g128-4bit",
+        model="neuralmagic/Llama-3.2-1B-Instruct-quantized.w8a8",
         messages=[
             {
                 "role": "user",
