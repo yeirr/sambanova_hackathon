@@ -479,7 +479,7 @@ class StatefulWorkflow(Workflow):
                                 chat_history="",
                                 kg_response=kg_response,
                                 ma_reasoning=ma_reasoning,
-                                query=message,
+                                query="Analyze the provided image and based on the analyzed image " + message,
                             ),
                         },
                         {
